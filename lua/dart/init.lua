@@ -251,6 +251,19 @@ M.create_default_hl = function()
 
   -- Pick
   override_label('DartPickLabel', 'Normal')
+
+  -- Marked buffers
+  set_default_hl('DartMarked', { link = visible })
+  override_label('DartMarkedLabel', visible)
+
+  set_default_hl('DartMarkedModified', { link = visible_modified })
+  override_label('DartMarkedLabelModified', visible_modified)
+
+  set_default_hl('DartMarkedCurrent', { link = current })
+  override_label('DartMarkedCurrentLabel', current)
+
+  set_default_hl('DartMarkedCurrentModified', { link = current_modified })
+  override_label('DartMarkedCurrentLabelModified', current_modified)
 end
 
 M.write_json = function(path, tbl)
@@ -405,14 +418,29 @@ end
 
 M.gen_tabline_item = function(item, cur, bufnr)
   local is_current = bufnr == cur
+  local is_marked = vim.tbl_contains(M.config.marklist, item.mark)
 
   local filename = vim.fn.fnamemodify(item.filename, ':t')
   local modified = vim.bo[bufnr].modified and 'Modified' or ''
 
   local click = string.format('%%%s@SwitchBuffer@', bufnr)
-  local hl_label = is_current and 'DartCurrentLabel' or 'DartVisibleLabel'
+
+  -- highlight groups based on marked status and current status
+  local hl_label, hl
+  if is_marked then
+    if is_current then
+      hl_label = 'DartMarkedCurrentLabel'
+      hl = 'DartMarkedCurrent'
+    else
+      hl_label = 'DartMarkedLabel'
+      hl = 'DartMarked'
+    end
+  else
+    hl_label = is_current and 'DartCurrentLabel' or 'DartVisibleLabel'
+    hl = is_current and 'DartCurrent' or 'DartVisible'
+  end
+
   local label = item.mark ~= '' and item.mark .. ' ' or ''
-  local hl = is_current and 'DartCurrent' or 'DartVisible'
   local content = filename ~= '' and filename or '*'
 
   local icon = M.get_icon(filename)
@@ -535,13 +563,13 @@ M.truncate_tabline = function(items, center, columns)
   end
 
   return (trunc_left and '%#DartVisibleLabel# < ' or '')
-    .. table.concat(
-      vim.tbl_map(function(n)
-        return M.config.tabline.format_item(n)
-      end, result),
-      ''
-    )
-    .. (trunc_right and '%#DartVisibleLabel# > ' or '')
+      .. table.concat(
+        vim.tbl_map(function(n)
+          return M.config.tabline.format_item(n)
+        end, result),
+        ''
+      )
+      .. (trunc_right and '%#DartVisibleLabel# > ' or '')
 end
 
 M.mark = function(bufnr, mark)

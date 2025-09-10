@@ -158,20 +158,33 @@ require('dart').setup({})
 ## Highlights
 `dart.nvim` falls back on `mini.tabline` highlights since they are well-supported by many colorschemes. The following highlights are available to override:
 
+### Current Buffer
 - `DartCurrent` - the currently selected tabline item
 - `DartCurrentLabel` - label (mark) for the currently selected item
 - `DartCurrentModified` - the currently selected tabline item, if modified
 - `DartCurrentLabelModified` - label (mark) for the currently selected item, if modified
 
+### Visible (Non-Current) Buffers
 - `DartVisible` - visible but not selected tabline items
 - `DartVisibleLabel` - label (mark) for the visible items
 - `DartVisibleModified` - visible tabline items, if modified
 - `DartVisibleLabelModified` - label (mark) for the visible items, if modified
 
+### Marked Buffers (from marklist)
+- `DartMarked` - marked buffers that are visible but not current
+- `DartMarkedLabel` - label (mark) for marked buffers
+- `DartMarkedModified` - marked buffers that are modified
+- `DartMarkedLabelModified` - label (mark) for marked buffers that are modified
+- `DartMarkedCurrent` - marked buffer that is currently selected
+- `DartMarkedCurrentLabel` - label (mark) for the currently selected marked buffer
+- `DartMarkedCurrentModified` - marked buffer that is current and modified
+- `DartMarkedCurrentLabelModified` - label (mark) for current marked buffer that is modified
+
+### Other
 - `DartFill` - Tabline fill between the buffer list and tabpage
 - `DartPickLabel` - Label for marks in `Dart.pick`
 
-You can also use the `config.tabline.label_fg` to only change the label foreground color (which is easier than overriding all 4 `*Label*` highlights)
+You can also use the `config.tabline.label_fg` to only change the label foreground color (which is easier than overriding all `*Label*` highlights).
 
 
 ## Persistence/sessions
@@ -226,6 +239,26 @@ require('dart').setup({
       return order
     end,
   }
+})
+```
+
+#### Styling marked buffers differently from recent buffers
+
+```lua
+-- Set up custom colors for marked buffers
+vim.api.nvim_create_autocmd('ColorScheme', {
+  callback = function()
+    -- Marked buffers get green color
+    vim.api.nvim_set_hl(0, 'DartMarked', { fg = '#a6e3a1' }) -- green
+    vim.api.nvim_set_hl(0, 'DartMarkedLabel', { fg = '#a6e3a1', bold = true })
+    
+    -- Current marked buffer stays blue but with green label
+    vim.api.nvim_set_hl(0, 'DartMarkedCurrentLabel', { fg = '#a6e3a1', bold = true })
+    
+    -- Recent buffers (buflist) keep default styling
+    -- Modified buffers get yellow
+    vim.api.nvim_set_hl(0, 'DartMarkedModified', { fg = '#f9e2af' }) -- yellow
+  end
 })
 ```
 
