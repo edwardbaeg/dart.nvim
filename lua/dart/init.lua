@@ -563,13 +563,13 @@ M.truncate_tabline = function(items, center, columns)
   end
 
   return (trunc_left and '%#DartVisibleLabel# < ' or '')
-      .. table.concat(
-        vim.tbl_map(function(n)
-          return M.config.tabline.format_item(n)
-        end, result),
-        ''
-      )
-      .. (trunc_right and '%#DartVisibleLabel# > ' or '')
+    .. table.concat(
+      vim.tbl_map(function(n)
+        return M.config.tabline.format_item(n)
+      end, result),
+      ''
+    )
+    .. (trunc_right and '%#DartVisibleLabel# > ' or '')
 end
 
 M.mark = function(bufnr, mark)
