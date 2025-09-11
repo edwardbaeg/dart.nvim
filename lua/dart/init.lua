@@ -42,6 +42,10 @@ M.config = {
     -- to override the label highlights entirely.
     label_fg = 'orange',
 
+    -- Override the default marked label foreground highlight
+    -- This applies specifically to marked buffer labels
+    label_marked_fg = 'orange',
+
     -- Display icons in the tabline
     -- Supported icon providers are mini.icons and nvim-web-devicons
     icons = true,
@@ -224,6 +228,16 @@ M.create_default_hl = function()
     })
   end
 
+  local override_marked_label = function(hl, link)
+    local prev = vim.api.nvim_get_hl(0, { name = link })
+    vim.api.nvim_set_hl(0, hl, {
+      bg = prev.bg or '',
+      fg = M.config.tabline.label_marked_fg,
+      bold = true,
+      default = true,
+    })
+  end
+
   local current = mk_fallback_hl('MiniTablineCurrent', 'TabLineSel')
   local current_modified = mk_fallback_hl('MiniTablineModifiedCurrent', 'StatusLine')
   local visible = mk_fallback_hl('MiniTablineVisible', 'TabLine')
@@ -254,16 +268,16 @@ M.create_default_hl = function()
 
   -- Marked buffers
   set_default_hl('DartMarked', { link = visible })
-  override_label('DartMarkedLabel', visible)
+  override_marked_label('DartMarkedLabel', visible)
 
   set_default_hl('DartMarkedModified', { link = visible_modified })
-  override_label('DartMarkedLabelModified', visible_modified)
+  override_marked_label('DartMarkedLabelModified', visible_modified)
 
   set_default_hl('DartMarkedCurrent', { link = current })
-  override_label('DartMarkedCurrentLabel', current)
+  override_marked_label('DartMarkedCurrentLabel', current)
 
   set_default_hl('DartMarkedCurrentModified', { link = current_modified })
-  override_label('DartMarkedCurrentLabelModified', current_modified)
+  override_marked_label('DartMarkedCurrentLabelModified', current_modified)
 end
 
 M.write_json = function(path, tbl)

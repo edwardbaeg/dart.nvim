@@ -1,39 +1,41 @@
 # dart.nvim - a minimalist tabline focused on pinning buffers
+
 [![CI](https://github.com/iofq/dart.nvim/actions/workflows/main.yaml/badge.svg)](https://github.com/iofq/dart.nvim/actions/workflows/main.yaml)
 
 dart.nvim is a minimalist tabline focused on pinning buffers for fast switching between a group of files. Pick a file and throw a single-character dart to jump to it.
 
 <img width="1052" height="1004" alt="scrot-2025-08-24T21:42:08" src="https://github.com/user-attachments/assets/d8123fcb-d1d5-4859-954e-e7cb7a5ad8c5" />
 
-
 ## Introduction
 
 #### The philosophy of this plugin is roughly:
+
 - In a given project, there's a set of ~1-10 files that you're working on and frequently jump between.
 - Using LSP or other code navigation, you open any number of other buffers that are short-lived.
   - These do not need to be tracked long-term, but jumping back to the n-th previous buffer can be helpful.
 - The tabline is the best place to display these marked files; being constantly in-view means you can more quickly memorize mark -> file mappings to reduce mental overhead, instead of being hidden behind a picker, list, or keymap.
 
 #### You should try this plugin if:
+
 - You've tried harpoon, arrow.nvim, grapple.nvim, etc. and are intrigued by the idea of pinning files, but couldn't get them to click
 - You regularly spam `gt` or `:bnext` to get to the tab/file you want.
 - You use a buffer picker like `Telescope`, `fzf-lua`, or `Snacks` to navigate files.
 
 ## Features
 
-⦿  Minimal tabline inspired by `mini.tabline`, with customizable formatting.
+⦿ Minimal tabline inspired by `mini.tabline`, with customizable formatting.
 
-⦿  Mark open buffers to pin them to the tabline. _This is separate from Vim's marks/global marks._
+⦿ Mark open buffers to pin them to the tabline. _This is separate from Vim's marks/global marks._
 
-⦿  Unmarked buffers will be listed in the `buflist` and sorted by most-recently-visited
+⦿ Unmarked buffers will be listed in the `buflist` and sorted by most-recently-visited
 
-⦿  Cycle through the tabline with `Dart.next` and `Dart.prev` as a replacement for `gt`/`:bnext`, or jump to a specific buffer by character with `Dart.jump`
+⦿ Cycle through the tabline with `Dart.next` and `Dart.prev` as a replacement for `gt`/`:bnext`, or jump to a specific buffer by character with `Dart.jump`
 
-⦿  Simple `Dart.pick` 'picker' to jump to any marked buffer with a single keystroke
+⦿ Simple `Dart.pick` 'picker' to jump to any marked buffer with a single keystroke
 
-⦿  Basic session persistence integrates with plugins like `mini.sessions`
+⦿ Basic session persistence integrates with plugins like `mini.sessions`
 
-⦿  Single ~700 line lua file with no external dependencies, for those of you who enjoy golfing.
+⦿ Single ~700 line lua file with no external dependencies, for those of you who enjoy golfing.
 
 ## Showcase
 
@@ -42,15 +44,17 @@ dart.nvim is a minimalist tabline focused on pinning buffers for fast switching 
 ![3-buffers.png](https://github.com/user-attachments/assets/da0a595b-9779-4eea-8845-2af2a54092e2)
 
 #### Opening a new buffer shifts buffers right, and pops the rightmost buffer off of the tabline:
+
 ![3-buffers-new.png](https://github.com/user-attachments/assets/92559642-d1a5-4e2a-96a9-141c3e592856)
 
 #### A buffer can be pinned using `;;` to add it to the `marklist` and display it regardless of the `buflist`
-![4-buffers.png](https://github.com/user-attachments/assets/ee58370a-1856-4c70-9ba1-b065baaf4a5f)
 
+![4-buffers.png](https://github.com/user-attachments/assets/ee58370a-1856-4c70-9ba1-b065baaf4a5f)
 
 ## Installation
 
 ### lazy.nvim
+
 ```lua
 {
     'iofq/dart.nvim',
@@ -60,13 +64,14 @@ dart.nvim is a minimalist tabline focused on pinning buffers for fast switching 
     },
     opts = {} -- see Configuration section
 }
-````
+```
 
 ### vim.pack (Neovim >= 0.12)
+
 ```lua
 vim.pack.add({ "https://github.com/iofq/dart.nvim"})
 require('dart').setup({})
-````
+```
 
 ## Configuration
 
@@ -95,6 +100,10 @@ require('dart').setup({})
     -- You can also use the DartVisibleLabel/DartCurrentLabel/etc. highlights
     -- to override the label highlights entirely.
     label_fg = 'orange',
+
+    -- Override the default marked label foreground highlight
+    -- This applies specifically to marked buffer labels
+    label_marked_fg = 'orange',
 
     -- Display icons in the tabline
     -- Supported icon providers are mini.icons and nvim-web-devicons
@@ -156,38 +165,34 @@ require('dart').setup({})
 ```
 
 ## Highlights
+
 `dart.nvim` falls back on `mini.tabline` highlights since they are well-supported by many colorschemes. The following highlights are available to override:
 
-### Current Buffer
-- `DartCurrent` - the currently selected tabline item
-- `DartCurrentLabel` - label (mark) for the currently selected item
-- `DartCurrentModified` - the currently selected tabline item, if modified
-- `DartCurrentLabelModified` - label (mark) for the currently selected item, if modified
+| Category    | Highlight Group                  | Description                                           |
+| ----------- | -------------------------------- | ----------------------------------------------------- |
+| **Current** | `DartCurrent`                    | Currently selected buffer                             |
+|             | `DartCurrentLabel`               | Label for currently selected buffer                   |
+|             | `DartCurrentModified`            | Currently selected buffer (modified)                  |
+|             | `DartCurrentLabelModified`       | Label for currently selected buffer (modified)        |
+| **Visible** | `DartVisible`                    | Visible but not selected buffers                      |
+|             | `DartVisibleLabel`               | Label for visible but not selected buffers            |
+|             | `DartVisibleModified`            | Visible buffers (modified)                            |
+|             | `DartVisibleLabelModified`       | Label for visible buffers (modified)                  |
+| **Marked**  | `DartMarked`                     | Marked buffers                                        |
+|             | `DartMarkedLabel`                | Label for marked buffers                              |
+|             | `DartMarkedModified`             | Marked buffers (modified)                             |
+|             | `DartMarkedLabelModified`        | Label for marked buffers (modified)                   |
+|             | `DartMarkedCurrent`              | Currently selected marked buffer                      |
+|             | `DartMarkedCurrentLabel`         | Label for currently selected marked buffer            |
+|             | `DartMarkedCurrentModified`      | Currently selected marked buffer (modified)           |
+|             | `DartMarkedCurrentLabelModified` | Label for currently selected marked buffer (modified) |
+| **Other**   | `DartFill`                       | Tabline fill                                          |
+|             | `DartPickLabel`                  | Label for marks in picker                             |
 
-### Visible (Non-Current) Buffers
-- `DartVisible` - visible but not selected tabline items
-- `DartVisibleLabel` - label (mark) for the visible items
-- `DartVisibleModified` - visible tabline items, if modified
-- `DartVisibleLabelModified` - label (mark) for the visible items, if modified
-
-### Marked Buffers (from marklist)
-- `DartMarked` - marked buffers that are visible but not current
-- `DartMarkedLabel` - label (mark) for marked buffers
-- `DartMarkedModified` - marked buffers that are modified
-- `DartMarkedLabelModified` - label (mark) for marked buffers that are modified
-- `DartMarkedCurrent` - marked buffer that is currently selected
-- `DartMarkedCurrentLabel` - label (mark) for the currently selected marked buffer
-- `DartMarkedCurrentModified` - marked buffer that is current and modified
-- `DartMarkedCurrentLabelModified` - label (mark) for current marked buffer that is modified
-
-### Other
-- `DartFill` - Tabline fill between the buffer list and tabpage
-- `DartPickLabel` - Label for marks in `Dart.pick`
-
-You can also use the `config.tabline.label_fg` to only change the label foreground color (which is easier than overriding all `*Label*` highlights).
-
+You can also use the `config.tabline.label_fg` to only change the label foreground color for all buffers, or `config.tabline.label_marked_fg` to only change the label foreground color for marked buffers (which is easier than overriding all `*Label*` highlights).
 
 ## Persistence/sessions
+
 `dart.nvim` supports basic session persistence and can be integrated with `mini.sessions` like so:
 
 ```lua
@@ -208,6 +213,7 @@ require('mini.sessions').setup {
 ## Recipes
 
 #### Move tabline icons to the right of label
+
 <img width="611" height="104" alt="scrot-2025-08-24T22:09:39" src="https://github.com/user-attachments/assets/17e85e12-44c6-4949-9b6f-62386c1f9f0a" />
 
 ```lua
@@ -224,8 +230,8 @@ require('mini.sessions').setup {
   end,
 ```
 
-
 #### Reverse tabline order, so marklist is to the left, and buflist to the right:
+
 <img width="620" height="79" alt="scrot-2025-08-20T23:52:20" src="https://github.com/user-attachments/assets/05bdcbdd-ffe0-47ec-a643-05fb6ea939ea" />
 
 ```lua
@@ -251,10 +257,10 @@ vim.api.nvim_create_autocmd('ColorScheme', {
     -- Marked buffers get green color
     vim.api.nvim_set_hl(0, 'DartMarked', { fg = '#a6e3a1' }) -- green
     vim.api.nvim_set_hl(0, 'DartMarkedLabel', { fg = '#a6e3a1', bold = true })
-    
+
     -- Current marked buffer stays blue but with green label
     vim.api.nvim_set_hl(0, 'DartMarkedCurrentLabel', { fg = '#a6e3a1', bold = true })
-    
+
     -- Recent buffers (buflist) keep default styling
     -- Modified buffers get yellow
     vim.api.nvim_set_hl(0, 'DartMarkedModified', { fg = '#f9e2af' }) -- yellow
